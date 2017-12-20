@@ -21,11 +21,11 @@ module.exports = function() {
           var r = {}
 
           if (options.statement) {
-            r.changes = request.rowsAffected
+            r.changes = result.rowsAffected[0]
           }
 
           if (options.insert) {
-            r.id = params.hasOwnProperty(options.id) ? params[options.id] : result[0][options.id]
+            r.id = params.hasOwnProperty(options.id) ? params[options.id] : result.recordset[0][options.id]
           }
 
           return r
@@ -37,7 +37,7 @@ module.exports = function() {
 
     connect: function(config) {
       var self = this;
-      self.connection = new sql.Connection(config.config);
+      self.connection = new sql.ConnectionPool(config.url);
 
       return promisify(function(cb) {
         return self.connection.connect(cb);
