@@ -632,12 +632,14 @@ exports.db = function(config) {
         options = undefined;
       }
 
-      return this.begin(options).then(function() {
-        return fn();
-      }).then(function(r) {
-        return self.commit().then(function() { return r; });
-      }, function(e) {
-        return self.rollback().then(function() { throw e; });
+      return this.whenConnected(function () {
+        return self.begin(options).then(function() {
+          return fn();
+        }).then(function(r) {
+          return self.commit().then(function() { return r; });
+        }, function(e) {
+          return self.rollback().then(function() { throw e; });
+        });
       });
     },
 
